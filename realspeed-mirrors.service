@@ -1,0 +1,13 @@
+[Unit]
+Description=Rank pacman mirrors by real package download speed
+Documentation=https://github.com/janvitos/realspeed-mirrors
+Wants=network-online.target
+After=network-online.target nss-lookup.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/realspeed-mirrors
+StandardOutput=null
+StandardError=journal
+Nice=10
+IPAccounting=yes

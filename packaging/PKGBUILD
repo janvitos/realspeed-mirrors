@@ -1,0 +1,22 @@
+# Maintainer: janvitos <janvitos at gmail dot com>
+pkgname=realspeed-mirrors
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Rank Arch Linux and CachyOS mirrors by real package download speed (cachyos-rate-mirrors replacement)'
+arch=('any')
+url='https://github.com/janvitos/realspeed-mirrors'
+license=('GPL-2.0-or-later')
+depends=('bash' 'curl' 'libarchive' 'pacman' 'rate-mirrors' 'util-linux')
+backup=('etc/conf.d/realspeed-mirrors.conf')
+install=realspeed-mirrors.install
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP') # replace with the real checksum (updpkgsums) when publishing a release
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 realspeed-mirrors         "$pkgdir/usr/bin/realspeed-mirrors"
+  install -Dm644 realspeed-mirrors.service "$pkgdir/usr/lib/systemd/system/realspeed-mirrors.service"
+  install -Dm644 realspeed-mirrors.timer   "$pkgdir/usr/lib/systemd/system/realspeed-mirrors.timer"
+  install -Dm644 realspeed-mirrors.conf    "$pkgdir/etc/conf.d/realspeed-mirrors.conf"
+  install -Dm644 README.md                 "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

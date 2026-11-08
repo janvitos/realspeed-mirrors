@@ -1,0 +1,17 @@
+post_install() {
+  cat <<'EOF'
+==> realspeed-mirrors installed. To switch over from cachyos-rate-mirrors:
+      sudo systemctl mask --now cachyos-rate-mirrors.timer cachyos-rate-mirrors.service
+      sudo systemctl enable --now realspeed-mirrors.timer
+      sudo realspeed-mirrors
+    (skip the mask line on plain Arch Linux). Settings: /etc/conf.d/realspeed-mirrors.conf
+EOF
+}
+
+post_remove() {
+  cat <<'EOF'
+==> realspeed-mirrors removed. If you masked cachyos-rate-mirrors, restore it with:
+      sudo systemctl unmask cachyos-rate-mirrors.timer cachyos-rate-mirrors.service
+      sudo systemctl enable --now cachyos-rate-mirrors.timer
+EOF
+}
