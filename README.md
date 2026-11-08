@@ -40,8 +40,9 @@ A real case (Canada, Nov 2026), where updates crawled at ~600 KB/s per file:
    package (15–100 MB) from the repo you actually use (`extra` for Arch;
    `cachyos-extra-znver4` / `-v4` / `-v3` / `cachyos` for CachyOS). Each mirror
    downloads up to 20 MB of it, one mirror at a time so they don't compete
-   for your bandwidth. A random package means no mirror gets judged on a file
-   it happens to have cached.
+   for your bandwidth. The 20 MB cap is enforced locally, since some mirrors
+   ignore range requests and send the whole file. A random package means no
+   mirror gets judged on a file it happens to have cached.
 3. **Re-test:** the 5 fastest mirrors download a second random package, and
    each keeps the **lower** of its two speeds. One lucky run can't put a
    mirror on top.
@@ -75,7 +76,7 @@ cd realspeed-mirrors/packaging && makepkg -si
 # CachyOS only: stop cachyos-rate-mirrors from overwriting the lists
 sudo systemctl mask --now cachyos-rate-mirrors.timer cachyos-rate-mirrors.service
 
-sudo systemctl enable --now realspeed-mirrors.timer   # weekly
+sudo systemctl enable --now realspeed-mirrors.timer   # 1st and 15th of each month
 sudo realspeed-mirrors                                 # rank now
 sudo pacman -Syyu
 ```
@@ -113,9 +114,13 @@ In China, neighbours are skipped and more domestic mirrors are tested.
 
 ## Costs and limits
 
-- **Data:** one run downloads about (`CANDIDATES` + `RETEST_TOP`) × 20 MB per
-  repo family, roughly 0.3–0.6 GB on CachyOS. On a metered connection, lower
-  `TEST_BYTES` / `CANDIDATES` or the timer frequency.
+- **Data:** about **0.7 GB per run** on CachyOS (measured with systemd
+  `IPAccounting`): ~0.2 GB for rate-mirrors' candidate discovery (its probes
+  are shortened to 300 ms by default), plus (`CANDIDATES` + `RETEST_TOP`) ×
+  20 MB of real tests per repo family. Plain Arch uses about 0.5 GB. At two runs
+  a month that's ~1.5 GB/month, close to cachyos-rate-mirrors' own timer.
+  On a metered connection, lower `TEST_BYTES` / `CANDIDATES` or run the
+  timer less often (`systemctl edit realspeed-mirrors.timer`).
 - **Time:** about 1–2 minutes, since mirrors are tested one at a time.
 - **Noise:** speeds vary between runs (time of day, mirror load). Taking the
   lower of two tests for the top mirrors damps this, but it's one sample per

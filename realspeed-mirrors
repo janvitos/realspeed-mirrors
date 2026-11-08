@@ -71,6 +71,10 @@ export RATE_MIRRORS_PROTOCOL=${RATE_MIRRORS_PROTOCOL:-https}
 export RATE_MIRRORS_ALLOW_ROOT=true
 export RATE_MIRRORS_FETCH_MIRRORS_TIMEOUT=${RATE_MIRRORS_FETCH_MIRRORS_TIMEOUT:-30000}
 export RATE_MIRRORS_MAX_DELAY=${RATE_MIRRORS_MAX_DELAY:-10000}
+# rate-mirrors only discovers candidates here; the real test ranks them. Short probes
+# cut its own traffic from ~490 MB to ~200 MB per run with about the same candidates.
+export RATE_MIRRORS_MIN_PER_MIRROR=${RATE_MIRRORS_MIN_PER_MIRROR:-100}
+export RATE_MIRRORS_MAX_PER_MIRROR=${RATE_MIRRORS_MAX_PER_MIRROR:-300}
 
 # Entry country: same detection as cachyos-rate-mirrors, so non-US users start near home.
 if [[ -z ${RATE_MIRRORS_ENTRY_COUNTRY:-} ]]; then
@@ -102,10 +106,13 @@ if ((!DRY)); then
 fi
 
 # speedtest <url> -> bytes/s on stdout (0 = failed / file missing)
+# The byte cap is enforced locally (head -c): some mirrors ignore Range and
+# send the whole package, which would otherwise run until TEST_SECS.
 speedtest(){
     local code=0 sp=0
-    read -r code sp < <(curl -s -o /dev/null -r "0-$((TEST_BYTES - 1))" -m "$TEST_SECS" \
-                         --connect-timeout 5 -w '%{http_code} %{speed_download}\n' "$1" 2>/dev/null)
+    read -r code sp < <( { curl -s -r "0-$((TEST_BYTES - 1))" -m "$TEST_SECS" --connect-timeout 5 \
+                             -w '%{stderr}%{http_code} %{speed_download}\n' "$1" \
+                           | head -c "$TEST_BYTES" >/dev/null; } 2>&1 )
     [[ $code == 200 || $code == 206 ]] || sp=0
     printf '%.0f\n' "${sp:-0}"
 }

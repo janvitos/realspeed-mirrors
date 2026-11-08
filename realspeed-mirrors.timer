@@ -1,9 +1,9 @@
 [Unit]
-Description=Weekly pacman mirror ranking by real download speed
+Description=Twice-monthly pacman mirror ranking by real download speed
 Documentation=https://github.com/janvitos/realspeed-mirrors
 
 [Timer]
-OnCalendar=weekly
+OnCalendar=*-*-01,15 00:00:00
 RandomizedDelaySec=6h
 Persistent=true
 
