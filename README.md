@@ -57,7 +57,19 @@ one instance runs at a time.
 
 ## Install
 
-### AUR
+### Release package (recommended)
+
+Install the package from the [latest release](https://github.com/janvitos/realspeed-mirrors/releases/latest).
+pacman can install it straight from the URL:
+
+```sh
+sudo pacman -U https://github.com/janvitos/realspeed-mirrors/releases/download/v1.0.0/realspeed-mirrors-1.0.0-1-any.pkg.tar.zst
+```
+
+### AUR (coming soon)
+
+Not on the AUR yet: new AUR account registration is temporarily closed.
+Once it's published, this will work:
 
 ```sh
 paru -S realspeed-mirrors        # or yay -S realspeed-mirrors
