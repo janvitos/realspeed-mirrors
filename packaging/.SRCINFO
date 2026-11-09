@@ -1,0 +1,19 @@
+pkgbase = realspeed-mirrors
+	pkgdesc = Rank Arch Linux and CachyOS mirrors by real package download speed (cachyos-rate-mirrors replacement)
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/janvitos/realspeed-mirrors
+	install = realspeed-mirrors.install
+	arch = any
+	license = GPL-2.0-or-later
+	depends = bash
+	depends = curl
+	depends = libarchive
+	depends = pacman
+	depends = rate-mirrors
+	depends = util-linux
+	backup = etc/conf.d/realspeed-mirrors.conf
+	source = realspeed-mirrors-1.0.0.tar.gz::https://github.com/janvitos/realspeed-mirrors/archive/refs/tags/v1.0.0.tar.gz
+	sha256sums = 2cae325ff72c9bb00d998c73579a4f40f549309966f6e7604c6b3a6f699b5fac
+
+pkgname = realspeed-mirrors
